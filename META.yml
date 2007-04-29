@@ -20,4 +20,4 @@ no_index:
     - t
 requires: 
   IO::Scalar: 0
-version: 0.01
+version: 0.02

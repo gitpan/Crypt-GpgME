@@ -31,7 +31,6 @@ perl_glue/ppport.h
 README
 t/00-load.t
 t/armor.t
-t/boilerplate.t
 t/engine_info.t
 t/get_key.t
 t/gpg/gpg.conf
