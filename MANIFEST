@@ -14,10 +14,6 @@ inc/Module/Install/Metadata.pm
 inc/Module/Install/PRIVATE/Crypt/GpgME.pm
 inc/Module/Install/Win32.pm
 inc/Module/Install/WriteAll.pm
-inc/Scalar/Util.pm
-inc/Test/Exception.pm
-inc/Test/MockModule.pm
-inc/Test/More.pm
 lib/Crypt/GpgME.pm
 Makefile.PL
 MANIFEST			This list of files

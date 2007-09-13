@@ -2,12 +2,11 @@
 abstract: Perl interface to libgpgme
 author: Florian Ragwitz, C<< <rafl at debian.org> >>
 build_requires: 
-  Scalar::Util: 0
+  File::Which: 0
   Test::Exception: 0
-  Test::MockModule: 0
   Test::More: 0
 distribution_type: module
-generated_by: Module::Install version 0.65
+generated_by: Module::Install version 0.67
 license: perl
 meta-spec: 
   url: http://module-build.sourceforge.net/META-spec-v1.3.html
@@ -20,4 +19,4 @@ no_index:
     - t
 requires: 
   IO::Scalar: 0
-version: 0.02
+version: 0.03

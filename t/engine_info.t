@@ -1,7 +1,5 @@
 #!perl
 
-#!perl
-
 use strict;
 use warnings;
 use Test::More tests => 6;
@@ -18,7 +16,7 @@ BEGIN {
             @info = Crypt::GpgME->get_engine_info;
     }, 'get engine info as class method');
 
-    ok ((grep { $_->{protocol} =~ /openpgp/ } @info), 'engine info looks sane');
+    ok ((grep { $_->{protocol} =~ /OpenPGP/ } @info), 'engine info looks sane');
 }
 
 {
@@ -31,5 +29,5 @@ BEGIN {
             @info = $ctx->get_engine_info;
     }, 'get engine info as instance method');
 
-    ok ((grep { $_->{protocol} =~ /openpgp/ } @info), 'engine info looks sane');
+    ok ((grep { $_->{protocol} =~ /OpenPGP/ } @info), 'engine info looks sane');
 }

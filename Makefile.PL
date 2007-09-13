@@ -10,15 +10,13 @@ all_from 'lib/Crypt/GpgME.pm';
 
 requires 'IO::Scalar';
 
-build_requires 'Scalar::Util';
-build_requires 'Test::More';
+build_requires 'File::Which';
 build_requires 'Test::Exception';
-build_requires 'Test::MockModule';
+build_requires 'Test::More';
 
 gpgme;
 
 no_index directory => 'ext';
 
-auto_include;
 auto_install;
 WriteAll;
