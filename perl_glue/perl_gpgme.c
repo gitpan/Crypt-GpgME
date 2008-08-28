@@ -1,6 +1,6 @@
 #include "perl_gpgme.h"
 
-static perl_gpgme_status_code_map_t perl_gpgme_status_code_map[] = {
+static const perl_gpgme_status_code_map_t perl_gpgme_status_code_map[] = {
 	{ GPGME_STATUS_EOF, "eof" },
 
 	{ GPGME_STATUS_ENTER, "enter" },
@@ -92,8 +92,7 @@ static perl_gpgme_status_code_map_t perl_gpgme_status_code_map[] = {
 	{ GPGME_STATUS_PKA_TRUST_BAD, "pka-trust-bad" },
 	{ GPGME_STATUS_PKA_TRUST_GOOD, "pka-trust-good" },
 
-	{ GPGME_STATUS_PLAINTEXT, "plaintext" },
-	{ 0, NULL }
+	{ GPGME_STATUS_PLAINTEXT, "plaintext" }
 };
 
 void
@@ -153,8 +152,7 @@ perl_gpgme_callback_t *
 perl_gpgme_callback_new (SV *func, SV *data, SV *obj, int n_params, perl_gpgme_callback_param_type_t param_types[], int n_retvals, perl_gpgme_callback_retval_type_t retval_types[]) {
 	perl_gpgme_callback_t *cb;
 
-	cb = (perl_gpgme_callback_t *)malloc (sizeof (perl_gpgme_callback_t));
-	memset (cb, 0, sizeof (perl_gpgme_callback_t));
+	Newxz (cb, 1, perl_gpgme_callback_t);
 
 	cb->func = newSVsv (func);
 
@@ -174,8 +172,8 @@ perl_gpgme_callback_new (SV *func, SV *data, SV *obj, int n_params, perl_gpgme_c
 			croak ("n_params is %d, but param_types is NULL", n_params);
 		}
 
-		cb->param_types = (perl_gpgme_callback_param_type_t *)malloc (sizeof (perl_gpgme_callback_param_type_t) * n_params);
-		memcpy (cb->param_types, param_types, n_params * sizeof (perl_gpgme_callback_param_type_t));
+		Newx (cb->param_types, n_params, perl_gpgme_callback_param_type_t);
+		Copy (param_types, cb->param_types, n_params, perl_gpgme_callback_param_type_t);
 	}
 
 	cb->n_retvals = n_retvals;
@@ -185,8 +183,8 @@ perl_gpgme_callback_new (SV *func, SV *data, SV *obj, int n_params, perl_gpgme_c
 			croak ("n_retvals is %d, but retval_types is NULL", n_retvals);
 		}
 
-		cb->retval_types = (perl_gpgme_callback_retval_type_t *)malloc (sizeof (perl_gpgme_callback_retval_type_t) * n_retvals);
-		memcpy (cb->retval_types, retval_types, n_retvals * sizeof (perl_gpgme_callback_retval_type_t));
+		Newx (cb->retval_types, n_retvals, perl_gpgme_callback_retval_type_t);
+		Copy (retval_types, cb->retval_types, n_retvals, perl_gpgme_callback_retval_type_t);
 	}
 
 #ifdef PERL_IMPLICIT_CONTEXT
@@ -215,18 +213,18 @@ perl_gpgme_callback_destroy (perl_gpgme_callback_t *cb) {
 		}
 
 		if (cb->param_types) {
-			free (cb->param_types);
+			Safefree (cb->param_types);
 			cb->n_params = 0;
 			cb->param_types = NULL;
 		}
 
 		if (cb->retval_types) {
-			free (cb->retval_types);
+			Safefree (cb->retval_types);
 			cb->n_retvals = 0;
 			cb->retval_types = NULL;
 		}
 
-		free (cb);
+		Safefree (cb);
 	}
 }
 
@@ -320,7 +318,7 @@ perl_gpgme_callback_invoke (perl_gpgme_callback_t *cb, perl_gpgme_callback_retva
 	for (i = 0; i < ret; i++) {
 		switch (cb->retval_types[i]) {
 			case PERL_GPGME_CALLBACK_RETVAL_TYPE_STR:
-				retvals[i] = (perl_gpgme_callback_retval_t)strdup (POPp);
+				retvals[i] = (perl_gpgme_callback_retval_t)savepv (POPp);
 				break;
 			default:
 				PUTBACK;
@@ -795,12 +793,14 @@ perl_gpgme_hashref_from_trust_item (gpgme_trust_item_t item) {
 
 SV *
 perl_gpgme_sv_from_status_code (gpgme_status_code_t status) {
-	perl_gpgme_status_code_map_t *i;
+	int i;
 	SV *ret = NULL;
 
-	for (i = perl_gpgme_status_code_map; i != NULL; i++) {
-		if (i->status == status) {
-			ret = newSVpv (i->string, 0);
+	for (i = 0; i < sizeof (perl_gpgme_status_code_map) / sizeof (perl_gpgme_status_code_map[0]); i++) {
+		perl_gpgme_status_code_map_t map = perl_gpgme_status_code_map[i];
+
+		if (map.status == status) {
+			ret = newSVpv (map.string, 0);
 			break;
 		}
 	}

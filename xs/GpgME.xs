@@ -13,7 +13,7 @@ perl_gpgme_passphrase_cb (void *user_data, const char *uid_hint, const char *pas
 	write (fd, buf, strlen (buf));
 	write (fd, "\n", 1);
 
-	free (buf);
+	Safefree (buf);
 
 	return 0; /* FIXME */
 }
@@ -348,11 +348,18 @@ gpgme_genkey (ctx, parms)
 		gpgme_data_t pubkey, seckey;
 		gpgme_genkey_result_t result;
 	INIT:
-		err = gpgme_data_new (&pubkey);
-		perl_gpgme_assert_error (err);
+		switch (gpgme_get_protocol (ctx)) {
+			case GPGME_PROTOCOL_OpenPGP:
+				pubkey = NULL;
+				seckey = NULL;
+				break;
+			default:
+				err = gpgme_data_new (&pubkey);
+				perl_gpgme_assert_error (err);
 
-		err = gpgme_data_new (&seckey);
-		perl_gpgme_assert_error (err);
+				err = gpgme_data_new (&seckey);
+				perl_gpgme_assert_error (err);
+		}
 	PPCODE:
 		err = gpgme_op_genkey (ctx, parms, pubkey, seckey);
 		perl_gpgme_assert_error (err);
@@ -393,7 +400,7 @@ gpgme_edit (ctx, key, func, user_data=NULL)
 		c_ctx = (gpgme_ctx_t)perl_gpgme_get_ptr_from_sv (ctx, "Crypt::GpgME");
 
 		cb = perl_gpgme_callback_new (func, user_data, ctx, 2, param_types, 1, retval_types);
-		
+
 		gpgme_op_edit (c_ctx, key, perl_gpgme_edit_cb, cb, RETVAL);
 
 		perl_gpgme_callback_destroy (cb);

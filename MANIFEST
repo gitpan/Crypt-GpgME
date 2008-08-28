@@ -28,6 +28,7 @@ README
 t/00-load.t
 t/armor.t
 t/engine_info.t
+t/genkey.t
 t/get_key.t
 t/gpg/gpg.conf
 t/gpg/pubring.gpg
