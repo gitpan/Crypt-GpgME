@@ -1,4 +1,5 @@
 Changes
+Debian_CPANTS.txt
 examples/sign.pl
 ext/Module/Install/PRIVATE/Crypt/GpgME.pm
 inc/Module/AutoInstall.pm
